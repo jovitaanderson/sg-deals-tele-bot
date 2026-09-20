@@ -91,14 +91,20 @@ everything else is already set up in `.github/workflows/check-deals.yml`.
 
 1. Go to the **Actions** tab of this repository.
 2. Click on the **Check Singapore Deals** workflow in the left sidebar.
-3. Click the **Run workflow** button (top right), then **Run workflow**
-   again to confirm.
-4. Wait about a minute, then click into the run to see its logs. If it
-   found anything new, you should get a Telegram message within a minute
-   or two of the run finishing.
-5. Check the `report.md` file in this repository — it's updated after
-   every run and lists everything the bot found (even on days it doesn't
-   message you, e.g. because nothing was new).
+3. Click the **Run workflow** button (top right). There's a checkbox
+   labelled "Send a fixed Telegram test message instead of checking
+   feeds" — tick it, then click **Run workflow** to confirm. This sends
+   one fixed confirmation message straight away, so you don't have to
+   wait for a real deal to show up to know Telegram is wired up
+   correctly.
+4. Wait about 15–30 seconds, then check Telegram for the message.
+5. Once that works, you can also try a normal run (leave the checkbox
+   unticked) to see real deal-checking in action. If it found anything
+   new, you'll get a Telegram message within a minute or two; if not, it
+   stays quiet.
+6. Check the `report.md` file in this repository — it's updated after
+   every normal run and lists everything the bot found (even on days it
+   doesn't message you, e.g. because nothing was new).
 
 After this first test, the bot runs automatically every day at 00:00 UTC
 (8:00am Singapore time) with no further action needed from you.
