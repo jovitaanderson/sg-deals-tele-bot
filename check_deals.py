@@ -547,25 +547,31 @@ def main():
         return send_test_ping()
 
     always_notify = os.environ.get("ALWAYS_NOTIFY", "").strip().lower() in ("1", "true", "yes")
+    full_check = os.environ.get("FULL_CHECK", "").strip().lower() in ("1", "true", "yes")
 
     conn = open_db(DB_PATH)
 
     all_candidates = collect_candidates()
-    new_items = [c for c in all_candidates if not already_seen(conn, c["hash"])]
+    if full_check:
+        # Ignore the dedup store entirely - report everything currently
+        # matching the scoring criteria, whether or not it was seen before.
+        items = all_candidates
+    else:
+        items = [c for c in all_candidates if not already_seen(conn, c["hash"])]
 
-    write_report(new_items, REPORT_PATH)
+    write_report(items, REPORT_PATH)
 
-    if new_items:
-        notify_telegram(new_items)
-        for c in new_items:
+    if items:
+        notify_telegram(items)
+        for c in items:
             mark_seen(conn, c["hash"], c["title"], c["link"], c["source"])
         conn.commit()
-        print(f"[info] found {len(new_items)} new item(s); report written to {REPORT_PATH}")
+        print(f"[info] found {len(items)} item(s); report written to {REPORT_PATH}")
     else:
-        print("[info] no new deals found; staying quiet.")
-        if always_notify and TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID:
+        print("[info] no matching deals found; staying quiet.")
+        if (always_notify or full_check) and TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID:
             try:
-                send_telegram(TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID, "No new deals right now. I'll keep watching.")
+                send_telegram(TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID, "No matching deals right now. I'll keep watching.")
             except (URLError, HTTPError, TimeoutError, OSError) as exc:
                 print(f"[warn] failed to send Telegram message: {exc}", file=sys.stderr)
 
