@@ -59,13 +59,20 @@ export default {
         env,
         chatId,
         "🇸🇬 <b>SG Deals Bot</b>\n\n" +
-          "/check — run a deal check right now\n" +
+          "/check — run a deal check right now (new deals only)\n" +
+          "/full — show every currently-matching deal, seen or not\n" +
           "/latest — show the most recent report\n" +
           "/help — show this message"
       );
     } else if (command === "/check") {
       await sendMessage(env, chatId, "🔍 Checking for new deals now, give me a minute…");
-      const ok = await triggerWorkflow(env);
+      const ok = await triggerWorkflow(env, { notify_even_if_empty: "true" });
+      if (!ok) {
+        await sendMessage(env, chatId, "⚠️ Couldn't trigger the check - please try again shortly.");
+      }
+    } else if (command === "/full") {
+      await sendMessage(env, chatId, "🔎 Running a full check of everything currently matching, seen or not…");
+      const ok = await triggerWorkflow(env, { full_check: "true" });
       if (!ok) {
         await sendMessage(env, chatId, "⚠️ Couldn't trigger the check - please try again shortly.");
       }
@@ -93,7 +100,7 @@ async function sendMessage(env, chatId, text) {
   });
 }
 
-async function triggerWorkflow(env) {
+async function triggerWorkflow(env, inputs) {
   const resp = await fetch(
     `https://api.github.com/repos/${env.GITHUB_OWNER}/${env.GITHUB_REPO}/actions/workflows/check-deals.yml/dispatches`,
     {
@@ -103,7 +110,7 @@ async function triggerWorkflow(env) {
         Accept: "application/vnd.github+json",
         "User-Agent": "sg-deals-tele-bot-worker",
       },
-      body: JSON.stringify({ ref: "main", inputs: { notify_even_if_empty: "true" } }),
+      body: JSON.stringify({ ref: "main", inputs }),
     }
   );
   return resp.ok;
