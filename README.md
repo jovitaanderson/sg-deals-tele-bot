@@ -44,6 +44,12 @@ repository variables/secrets, or edit the workflow file):
 | `LOOKBACK_DAYS`   | `2`     | How many days back to consider articles    |
 | `SCORE_THRESHOLD` | `4`     | Minimum score before something is reported |
 
+Note: if `/check` (or the daily run) says nothing's new, it usually just
+means everything currently matching has already been sent to you before
+(the dedup store remembers it) - not that the bot is broken. Use `/full`
+(see below) to see everything that currently matches, regardless of
+whether it's been sent before.
+
 ## Setup (step-by-step, no coding needed)
 
 ### 1. Create a Telegram bot
@@ -109,7 +115,7 @@ everything else is already set up in `.github/workflows/check-deals.yml`.
 After this first test, the bot runs automatically every day at 00:00 UTC
 (8:00am Singapore time) with no further action needed from you.
 
-## Optional: interactive commands (/check, /latest)
+## Optional: interactive commands (/check, /full, /latest)
 
 By default the bot only *sends* messages - it can't react when you type
 something back, because GitHub Actions only wakes it up once a day (or
@@ -165,13 +171,29 @@ https://api.telegram.org/bot<TOKEN>/setWebhook?url=<WORKER_URL>&secret_token=<SE
 You should see `{"ok":true,"result":true,...}`. That's it - message your
 bot with `/help` on Telegram and you should get an instant reply.
 
+Whenever you update `cloudflare-worker/worker.js` in this repo, remember
+to also paste the new version into the Worker's **Edit code** screen and
+click **Deploy** again - the Worker doesn't auto-update from GitHub.
+
 ### Available commands
 
-| Command   | What it does                                              |
-|-----------|-------------------------------------------------------------|
-| `/help`   | Shows the list of commands                                |
-| `/check`  | Triggers an on-demand deal check (same as "Run workflow")  |
-| `/latest` | Sends back the contents of the most recent `report.md`    |
+| Command   | What it does                                                      |
+|-----------|--------------------------------------------------------------------|
+| `/help`   | Shows the list of commands                                        |
+| `/check`  | Checks for *new* deals only - stays quiet on dedup matches         |
+| `/full`   | Ignores the dedup store and shows every currently-matching deal, seen or not |
+| `/latest` | Sends back the contents of the most recent `report.md`            |
+
+`/check` always ends with a message either way - either the deals it
+found, or "No matching deals right now." (unlike the silent daily
+schedule, which stays quiet when there's nothing new so you're not
+pinged for no reason).
+
+`/full` is useful when `/check` says nothing's new and you want to see
+what's currently out there regardless - e.g. to double check the bot
+is working, or to re-see a deal you already got notified about earlier.
+Anything `/full` reports also gets marked as seen, so the next `/check`
+or daily run won't repeat it.
 
 Only messages from your own `ALLOWED_CHAT_ID` are answered - anyone else
 who finds your bot's username gets ignored.
