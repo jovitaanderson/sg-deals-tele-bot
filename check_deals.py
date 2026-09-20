@@ -47,14 +47,19 @@ GOOGLE_NEWS_QUERIES = [
     "Singapore tech deal OR gadget sale",
     "Singapore 1-for-1 OR free meal OR F&B deal",
     "Singapore skincare deal OR beauty sale",
+    "Singapore win a voucher OR stand a chance to win OR lucky draw",
+    "Singapore mega sale OR warehouse sale OR clearance sale OR members sale",
+    "Singapore fitness challenge OR workout challenge reward voucher",
 ]
 
 REDDIT_SUBS = ["singapore", "singaporefi", "askSingapore"]
-REDDIT_QUERY = "voucher OR deal OR promo OR freebie OR discount OR giveaway"
+REDDIT_QUERY = "voucher OR deal OR promo OR freebie OR discount OR giveaway OR challenge OR contest OR win"
 
 BLOG_FEEDS = [
     ("Milelion", "https://milelion.com/feed/"),
     ("Mothership", "https://mothership.sg/feed/"),
+    ("SGCheapo", "https://sgcheapo.com/feed/"),
+    ("EverydayOnSales", "https://everydayonsales.com/feed/"),
 ]
 
 
@@ -83,24 +88,35 @@ def build_sources():
 # Scoring heuristics
 # --------------------------------------------------------------------------
 
+# Optional inserted dollar amount, e.g. "win a *$50* voucher" - many earn
+# patterns below allow this to slot in between the verb and "voucher" so a
+# specific amount doesn't break the match.
+_AMOUNT = r"(?:\$\s?\d+(?:\.\d+)?\s+)?"
+
 # (regex pattern, weight) - heavily upweight "earn a voucher" style language
 EARN_PATTERNS = [
-    (r"\bearn\s+a\s+(free\s+)?voucher\b", 6),
+    (r"\bearn\s+a\s+(?:free\s+)?" + _AMOUNT + r"e?-?voucher\b", 6),
     (r"\bearn\s+a\s*\$", 6),
     (r"\bcomplete\s+(the|a)\s+challenge\b", 6),
-    (r"\bstep\s+challenge\b", 6),
+    (r"\b(step|fitness|workout|walking)\s+challenge\b", 6),
     (r"\bhej\s*fit\b", 6),
     (r"\bsign[\s-]?up\s+(and\s+get|reward|bonus)\b", 5),
     (r"\brefer(ral)?\s+(a\s+)?friend\b", 4),
-    (r"\bclaim\s+(your|a|the)\s+(free\s+)?voucher\b", 6),
-    (r"\bredeem\s+(your|a|the)\s+(free\s+)?voucher\b", 6),
+    (r"\bclaim\s+(your|a|the)\s+(?:free\s+)?" + _AMOUNT + r"e?-?voucher\b", 6),
+    (r"\bredeem\s+(your|a|the)\s+(?:free\s+)?" + _AMOUNT + r"e?-?voucher\b", 6),
     (r"\bfree\s+e?-?voucher\b", 5),
     (r"\bcashback\s+when\s+you\b", 4),
     (r"\bspend\s+and\s+get\b", 4),
     (r"\bregister\s+and\s+get\b", 4),
     (r"\bdownload\s+the\s+app\s+and\s+get\b", 4),
     (r"\bcomplete\s+your\s+profile\b", 3),
-    (r"\bwin\s+a\s+voucher\b", 5),
+    (r"\bwin\s+a\s+(?:free\s+)?" + _AMOUNT + r"e?-?voucher\b", 5),
+    (r"\bwin\s+a\s+" + _AMOUNT + r"(shopping|gift)\s+voucher\b", 5),
+    (r"\bstand\s+(a\s+chance\s+)?to\s+win\b", 5),
+    (r"\bchance\s+to\s+win\b", 4),
+    (r"\bspin\s+(and\s+)?win\b", 4),
+    (r"\bscratch\s+(and\s+)?win\b", 4),
+    (r"\blucky\s+draw\b", 3),
     (r"\breward\s+yourself\b", 3),
     (r"\btask\s+reward\b", 4),
     (r"\bquiz\s+reward\b", 4),
@@ -117,12 +133,20 @@ DEAL_PATTERNS = [
     (r"\d{1,2}\s*%\s*off\b", 2),
     (r"\$\s*\d+(\.\d+)?\s*off\b", 2),
     (r"\b1[\s-]for[\s-]1\b", 3),
+    (r"\bbuy\s*1\s*get\s*1\b", 3),
+    (r"\bbogo\b", 2),
     (r"\bsale\b", 1),
     (r"\bfreebie\b", 2),
     (r"\bbundle\s+deal\b", 1),
     (r"\bgiveaway\b", 2),
     (r"\bdeal(s)?\b", 1),
     (r"\bpromotion(s)?\b", 1),
+    (r"\bclearance\s+sale\b", 2),
+    (r"\bwarehouse\s+sale\b", 2),
+    (r"\bmembers?'?\s+sale\b", 2),
+    (r"\bstorewide\b", 1),
+    (r"\bflash\s+sale\b", 2),
+    (r"\bmega\s+sale\b", 1),
 ]
 
 # Negative-context language that should suppress "deal" scoring for what
@@ -163,7 +187,9 @@ CATEGORY_PATTERNS = {
         r"\bharvey\s+norman\b", r"\bgaming\b", r"\bps5\b", r"\bplaystation\b",
         r"\bxbox\b", r"\bnintendo\b", r"\bswitch\b", r"\btablet\b",
         r"\bipad\b", r"\bmacbook\b", r"\bearbuds?\b", r"\bairpods\b",
-        r"\bsmartwatch\b", r"\bappliance\b",
+        r"\bsmartwatch\b", r"\bappliance\b", r"\bbest\s+denki\b",
+        r"\bgain\s+city\b", r"\bchallenger\b", r"\bnewstead\b",
+        r"\baudio\s+house\b",
     ],
     "F&B": [
         r"\brestaurant\b", r"\bcafe\b", r"\bbuffet\b", r"\bfree\s+meal\b",
@@ -171,18 +197,21 @@ CATEGORY_PATTERNS = {
         r"\bgrabfood\b", r"\bdeliveroo\b", r"\bbak\s+kut\s+teh\b",
         r"\bhawker\b", r"\bbubble\s+tea\b", r"\bcoffee\b", r"\bkfc\b",
         r"\bmcdonald'?s\b", r"\bburger\s+king\b", r"\bpizza\b", r"\bsushi\b",
-        r"\bramen\b", r"\b1[\s-]for[\s-]1\b",
+        r"\bramen\b", r"\b1[\s-]for[\s-]1\b", r"\bbuy\s*1\s*get\s*1\b",
+        r"\bbogo\b",
     ],
     "Skincare": [
         r"\bskincare\b", r"\bbeauty\b", r"\bcosmetics?\b", r"\bserum\b",
         r"\bmoisturi[sz]er\b", r"\bsunscreen\b", r"\bsephora\b",
         r"\bwatsons\b", r"\bguardian\b", r"\bk-beauty\b", r"\binnisfree\b",
         r"\blaneige\b", r"\bthe\s+ordinary\b", r"\bfacial\b", r"\bspa\b",
+        r"\bsasa\b", r"\bbath\s*&?\s*body\s+works\b", r"\bface\s+shop\b",
     ],
     "Lifestyle": [
         r"\btravel\b", r"\bstaycation\b", r"\bhotel\b", r"\bflight\b",
         r"\bshopping\b", r"\bmall\b", r"\bfashion\b", r"\bapparel\b",
-        r"\buniqlo\b", r"\bzara\b", r"\blifestyle\b",
+        r"\buniqlo\b", r"\bzara\b", r"\blifestyle\b", r"\bikea\b",
+        r"\bfurniture\b", r"\bhome\s*&?\s*living\b", r"\bdecor\b",
     ],
 }
 
