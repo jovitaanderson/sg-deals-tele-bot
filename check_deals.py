@@ -262,9 +262,40 @@ CATEGORY_PATTERNS = {
     ],
 }
 
+# Patterns that mark a *concrete, quantified* voucher/discount - a real
+# dollar amount, percentage, named sale event, or an explicit "win/claim a
+# voucher" call to action. This is the gate for retailer page scraping
+# (see check_retailer_pages): a page mentioning "voucher" or "sale" in
+# passing (nav links, generic loyalty copy like "refer a friend and get
+# rewarded") should NOT trigger a notification - only something a reader
+# could actually go use or claim should.
+STRONG_DEAL_PATTERNS = [
+    r"\$\s*\d+(\.\d+)?\s*off\b",
+    r"\d{1,3}\s*%\s*off\b",
+    r"\bup\s+to\s+\d{1,3}\s*%\b",
+    r"\b1[\s-]for[\s-]1\b",
+    r"\bbuy\s*1\s*get\s*1\b",
+    r"\bbogo\b",
+    r"\bpromo\s*code\b",
+    r"\bdiscount\s*code\b",
+    r"\bfree\s+" + _AMOUNT + r"e?-?voucher\b",
+    r"\bwin\s+a\s+" + _AMOUNT + r"e?-?voucher\b",
+    r"\bwin\s+a\s+" + _AMOUNT + r"(shopping|gift)\s+voucher\b",
+    r"\bclaim\s+(your|a|the)\s+" + _AMOUNT + r"e?-?voucher\b",
+    r"\bredeem\s+(your|a|the)\s+" + _AMOUNT + r"e?-?voucher\b",
+    r"\bearn\s+a\s+" + _AMOUNT + r"e?-?voucher\b",
+    r"\bstand\s+(a\s+chance\s+)?to\s+win\b",
+    r"\bclearance\s+sale\b",
+    r"\bwarehouse\s+sale\b",
+    r"\bmembers?'?\s+sale\b",
+    r"\bflash\s+sale\b",
+    r"\bmega\s+sale\b",
+]
+
 _EARN_RE = [(re.compile(p, re.I), w) for p, w in EARN_PATTERNS]
 _DEAL_RE = [(re.compile(p, re.I), w) for p, w in DEAL_PATTERNS]
 _NEG_RE = [(re.compile(p, re.I), w) for p, w in NEGATIVE_PATTERNS]
+_STRONG_DEAL_RE = [re.compile(p, re.I) for p in STRONG_DEAL_PATTERNS]
 _CAT_RE = {
     cat: [re.compile(p, re.I) for p in pats]
     for cat, pats in CATEGORY_PATTERNS.items()
@@ -479,21 +510,34 @@ def strip_scripts_and_tags(html_text):
     return re.sub(r"\s+", " ", text).strip()
 
 
-def extract_snippet(text, pattern, radius=60):
-    match = pattern.search(text)
-    if not match:
-        return None
+def extract_snippet_from_match(text, match, radius=50):
+    """Grab context around a match, trimmed to word boundaries so the
+    snippet doesn't start or end mid-word."""
     start = max(0, match.start() - radius)
     end = min(len(text), match.end() + radius)
-    return text[start:end].strip()
+    snippet = text[start:end]
+
+    if start > 0:
+        first_space = snippet.find(" ")
+        if 0 <= first_space < 20:
+            snippet = snippet[first_space + 1:]
+    if end < len(text):
+        last_space = snippet.rfind(" ")
+        if last_space > len(snippet) - 20:
+            snippet = snippet[:last_space]
+
+    return snippet.strip()
 
 
 def check_retailer_pages():
-    """Fetch each watched retailer's promo page directly and score its
-    plain text. No publish date exists for a live page, so these bypass
-    the lookback window entirely; dedup still applies via the usual hash
-    (of retailer + matched snippet), so an unchanged page only notifies
-    once and a genuinely new/changed promo is treated as new."""
+    """Fetch each watched retailer's promo page directly and look for a
+    concrete, quantified deal (a dollar amount, a percentage, a named sale,
+    an explicit "win/claim a voucher") - not just any page that happens to
+    mention "voucher" or "sale" in passing (nav links, generic loyalty
+    copy). No publish date exists for a live page, so these bypass the
+    lookback window entirely; dedup still applies via the usual hash, so
+    an unchanged set of deals only notifies once and a genuine change is
+    treated as new."""
     candidates = []
 
     for name, url, default_category in RETAILER_WATCHLIST:
@@ -514,22 +558,33 @@ def check_retailer_pages():
             # to scan - nothing more we can do without a browser engine.
             continue
 
-        scores = score_item(plain)
-        if scores["total"] < SCORE_THRESHOLD:
+        strong_matches = [m for pat in _STRONG_DEAL_RE for m in pat.finditer(plain)]
+        if not strong_matches:
+            # No concrete, quantified deal on this page right now - skip it
+            # rather than notifying on vague promo/loyalty copy.
             continue
 
-        best_pattern, best_weight = None, -1
-        for pat, w in _EARN_RE + _DEAL_RE:
-            if w > best_weight and pat.search(plain):
-                best_pattern, best_weight = pat, w
-
-        snippet = extract_snippet(plain, best_pattern) if best_pattern else plain[:120]
-        title = f"{name}: {snippet}" if snippet else f"{name}: possible promotion detected"
+        scores = score_item(plain)
         categories = scores["categories"] or [default_category]
+
+        if len(strong_matches) == 1:
+            snippet = extract_snippet_from_match(plain, strong_matches[0])
+            title = f"{name}: {snippet}"
+            hash_seed = f"{name} {snippet}"
+        else:
+            # A busy listing page (many products, each with its own deal) -
+            # without real HTML structure we can't cleanly attribute each
+            # deal to a product, so list the distinct matched terms instead
+            # of stitching together a garbled multi-product snippet.
+            distinct = sorted({m.group(0).strip() for m in strong_matches})
+            shown = distinct[:5]
+            more = f" (+{len(distinct) - 5} more)" if len(distinct) > 5 else ""
+            title = f"{name}: {len(strong_matches)} deals detected - {', '.join(shown)}{more}"
+            hash_seed = f"{name} " + "|".join(distinct)
 
         candidates.append(
             {
-                "hash": title_hash(f"{name} {snippet or ''}"),
+                "hash": title_hash(hash_seed),
                 "title": title,
                 "link": url,
                 "source": f"{name} (site)",
