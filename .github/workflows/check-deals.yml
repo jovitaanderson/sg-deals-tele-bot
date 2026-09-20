@@ -38,6 +38,8 @@ jobs:
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          GOOGLE_CSE_API_KEY: ${{ secrets.GOOGLE_CSE_API_KEY }}
+          GOOGLE_CSE_ID: ${{ secrets.GOOGLE_CSE_ID }}
           SEND_TEST_PING: ${{ github.event.inputs.send_test_message }}
           ALWAYS_NOTIFY: ${{ github.event.inputs.notify_even_if_empty }}
           FULL_CHECK: ${{ github.event.inputs.full_check }}
