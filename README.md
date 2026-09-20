@@ -115,6 +115,52 @@ everything else is already set up in `.github/workflows/check-deals.yml`.
 After this first test, the bot runs automatically every day at 00:00 UTC
 (8:00am Singapore time) with no further action needed from you.
 
+## Optional: task-to-earn-voucher search (Google Custom Search)
+
+The main sources (Google News, Reddit, blogs) mostly find things that
+made it into news coverage. "Complete a task/challenge to earn a
+voucher" opportunities - like IKEA's Hej Fit, or Singapore crowdtask/
+microtask apps - often live on app pages, forum threads, or company
+blogs that never get indexed by Google News. Google's Custom Search
+JSON API does real web search (not just news) and has a genuinely free
+tier (100 queries/day - this bot uses about 6 per run, so a normal day
+of automatic + a few manual checks stays well within that). This part
+is optional - without it, the bot still works, just with narrower
+coverage of these task-based opportunities.
+
+### A. Create a Custom Search Engine
+
+1. Go to `https://programmablesearchengine.google.com/` and sign in with
+   any Google account.
+2. Click **Add** to create a new search engine.
+3. Under "What to search", choose **Search the entire web** (not a
+   specific list of sites).
+4. Give it any name and create it.
+5. Open the search engine's **Overview** page and copy the **Search
+   engine ID** - this is your `GOOGLE_CSE_ID`.
+
+### B. Get an API key
+
+1. Go to `https://console.cloud.google.com/apis/library/customsearch.googleapis.com`
+   (create a free Google Cloud project first if prompted - no credit
+   card needed for this API's free tier).
+2. Click **Enable**.
+3. Go to `https://console.cloud.google.com/apis/credentials`, click
+   **Create credentials → API key**, and copy the key - this is your
+   `GOOGLE_CSE_API_KEY`. Consider restricting it to only the "Custom
+   Search API" on that credentials page for safety.
+
+### C. Add both as GitHub Actions secrets
+
+Same as the Telegram setup in step 3 above: **Settings → Secrets and
+variables → Actions → New repository secret** for each of
+`GOOGLE_CSE_API_KEY` and `GOOGLE_CSE_ID`.
+
+That's it - the next run (scheduled, or a manual "Run workflow") will
+start using it automatically. If you go over the 100 queries/day free
+quota (e.g. from a lot of manual testing in one day), it just logs a
+warning and skips that source for the rest of the day - nothing breaks.
+
 ## Optional: interactive commands (/check, /full, /latest)
 
 By default the bot only *sends* messages - it can't react when you type
