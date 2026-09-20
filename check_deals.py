@@ -36,8 +36,27 @@ REPORT_PATH = os.environ.get("REPORT_PATH", "report.md")
 REQUEST_TIMEOUT = int(os.environ.get("REQUEST_TIMEOUT", "20"))
 TELEGRAM_BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "").strip()
 TELEGRAM_CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID", "").strip()
+GOOGLE_CSE_API_KEY = os.environ.get("GOOGLE_CSE_API_KEY", "").strip()
+GOOGLE_CSE_ID = os.environ.get("GOOGLE_CSE_ID", "").strip()
 
 USER_AGENT = "Mozilla/5.0 (compatible; SGDealsBot/1.0; +https://github.com)"
+
+# Real web search (not just news) via the Google Custom Search JSON API -
+# free for 100 queries/day. This is specifically for "complete a task to
+# earn a voucher" style opportunities (crowdtask apps, IKEA Hej Fit-style
+# challenges) that live on app pages, forum threads, or company blogs
+# that Google News doesn't index. Kept to a small, fixed query list to
+# stay comfortably within the free daily quota even with several manual
+# /check or /full runs on the same day. Skipped entirely (no error) if
+# GOOGLE_CSE_API_KEY / GOOGLE_CSE_ID aren't set.
+CUSTOM_SEARCH_QUERIES = [
+    "Singapore crowdtask voucher reward",
+    "Singapore complete task earn voucher",
+    "IKEA Hej Fit Singapore voucher",
+    "Singapore microtask survey reward voucher",
+    "Singapore gig task reward voucher app",
+    "Singapore data collection task reward voucher",
+]
 
 GOOGLE_NEWS_QUERIES = [
     "Singapore voucher",
@@ -500,6 +519,66 @@ def collect_candidates():
     return candidates
 
 
+def fetch_custom_search(query):
+    url = (
+        "https://www.googleapis.com/customsearch/v1"
+        f"?key={GOOGLE_CSE_API_KEY}&cx={GOOGLE_CSE_ID}&q={quote(query)}&gl=sg&num=10"
+    )
+    raw = fetch(url)
+    return json.loads(raw.decode("utf-8")).get("items", [])
+
+
+def collect_custom_search_candidates():
+    """Real web search via Google Custom Search - catches task-to-earn
+    opportunities (crowdtask apps, challenge pages, forum posts) that
+    live outside Google News' recognized-publisher index. No publish
+    date is available for a search result, so these bypass the lookback
+    window; dedup still applies via the usual title hash."""
+    if not GOOGLE_CSE_API_KEY or not GOOGLE_CSE_ID:
+        print("[info] GOOGLE_CSE_API_KEY / GOOGLE_CSE_ID not set - skipping Google Custom Search.")
+        return []
+
+    seen_hashes_this_run = set()
+    candidates = []
+
+    for query in CUSTOM_SEARCH_QUERIES:
+        try:
+            items = fetch_custom_search(query)
+        except (URLError, HTTPError, TimeoutError, OSError, ValueError) as exc:
+            print(f"[warn] Google Custom Search failed for '{query}': {exc}", file=sys.stderr)
+            continue
+
+        for item in items:
+            title = clean_text(item.get("title", ""))
+            link = item.get("link", "")
+            snippet = clean_text(item.get("snippet", ""))
+            if not title or not link:
+                continue
+
+            h = title_hash(title)
+            if h in seen_hashes_this_run:
+                continue
+            seen_hashes_this_run.add(h)
+
+            combined_text = f"{title} {snippet}"
+            scores = score_item(combined_text)
+            if scores["total"] < SCORE_THRESHOLD:
+                continue
+
+            candidates.append(
+                {
+                    "hash": h,
+                    "title": title,
+                    "link": link,
+                    "source": f"Google Search: {query}",
+                    "date": None,
+                    **scores,
+                }
+            )
+
+    return candidates
+
+
 def strip_scripts_and_tags(html_text):
     """Like strip_tags, but also drops <script>/<style> blocks entirely so
     embedded JS/CSS isn't scored as if it were page copy."""
@@ -755,7 +834,7 @@ def main():
 
     conn = open_db(DB_PATH)
 
-    all_candidates = collect_candidates() + check_retailer_pages()
+    all_candidates = collect_candidates() + check_retailer_pages() + collect_custom_search_candidates()
     all_candidates.sort(key=lambda c: c["total"], reverse=True)
     if full_check:
         # Ignore the dedup store entirely - report everything currently
