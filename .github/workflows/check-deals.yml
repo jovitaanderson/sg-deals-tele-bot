@@ -14,6 +14,10 @@ on:
         description: "Always send a Telegram message, even if no new deals were found (used by /check)"
         type: boolean
         default: false
+      full_check:
+        description: "Ignore the dedup store and report every currently-matching deal, seen or not (used by /full)"
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -36,6 +40,7 @@ jobs:
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           SEND_TEST_PING: ${{ github.event.inputs.send_test_message }}
           ALWAYS_NOTIFY: ${{ github.event.inputs.notify_even_if_empty }}
+          FULL_CHECK: ${{ github.event.inputs.full_check }}
         run: python3 check_deals.py
 
       - name: Commit updated seen-list and report
