@@ -10,6 +10,10 @@ on:
         description: "Send a fixed Telegram test message instead of checking feeds (use this to confirm Telegram is wired up)"
         type: boolean
         default: false
+      notify_even_if_empty:
+        description: "Always send a Telegram message, even if no new deals were found (used by /check)"
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -31,6 +35,7 @@ jobs:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           SEND_TEST_PING: ${{ github.event.inputs.send_test_message }}
+          ALWAYS_NOTIFY: ${{ github.event.inputs.notify_even_if_empty }}
         run: python3 check_deals.py
 
       - name: Commit updated seen-list and report
