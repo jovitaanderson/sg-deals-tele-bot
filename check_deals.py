@@ -546,6 +546,8 @@ def main():
     if os.environ.get("SEND_TEST_PING", "").strip().lower() in ("1", "true", "yes"):
         return send_test_ping()
 
+    always_notify = os.environ.get("ALWAYS_NOTIFY", "").strip().lower() in ("1", "true", "yes")
+
     conn = open_db(DB_PATH)
 
     all_candidates = collect_candidates()
@@ -561,6 +563,11 @@ def main():
         print(f"[info] found {len(new_items)} new item(s); report written to {REPORT_PATH}")
     else:
         print("[info] no new deals found; staying quiet.")
+        if always_notify and TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID:
+            try:
+                send_telegram(TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID, "No new deals right now. I'll keep watching.")
+            except (URLError, HTTPError, TimeoutError, OSError) as exc:
+                print(f"[warn] failed to send Telegram message: {exc}", file=sys.stderr)
 
     conn.close()
     return 0
