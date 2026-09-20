@@ -1,6 +1,6 @@
 # SG Deals Report — 2026-09-20
 
-Generated at 2026-09-20T14:59:51.794011+00:00
+Generated at 2026-09-20T15:06:09.786730+00:00
 
 ## 🎁 Earn a Voucher / Freebies
 - [IKEA: 14 deals detected - 12% off, 14% off, 16% off, 20% off, 21% off (+4 more)](https://www.ikea.com/sg/en/campaigns/) — score 8 — IKEA (site)
