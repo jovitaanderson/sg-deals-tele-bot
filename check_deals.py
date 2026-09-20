@@ -544,7 +544,14 @@ def collect_custom_search_candidates():
     for query in CUSTOM_SEARCH_QUERIES:
         try:
             items = fetch_custom_search(query)
-        except (URLError, HTTPError, TimeoutError, OSError, ValueError) as exc:
+        except HTTPError as exc:
+            try:
+                body = exc.read().decode("utf-8", errors="ignore")[:500]
+            except Exception:
+                body = ""
+            print(f"[warn] Google Custom Search failed for '{query}': {exc} - {body}", file=sys.stderr)
+            continue
+        except (URLError, TimeoutError, OSError, ValueError) as exc:
             print(f"[warn] Google Custom Search failed for '{query}': {exc}", file=sys.stderr)
             continue
 
