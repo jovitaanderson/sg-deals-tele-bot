@@ -103,7 +103,7 @@ async function triggerWorkflow(env) {
         Accept: "application/vnd.github+json",
         "User-Agent": "sg-deals-tele-bot-worker",
       },
-      body: JSON.stringify({ ref: "main" }),
+      body: JSON.stringify({ ref: "main", inputs: { notify_even_if_empty: "true" } }),
     }
   );
   return resp.ok;
