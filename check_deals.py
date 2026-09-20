@@ -519,11 +519,33 @@ def notify_telegram(new_items):
             print(f"[warn] failed to send Telegram message: {exc}", file=sys.stderr)
 
 
+def send_test_ping():
+    """Send a fixed test message, bypassing feeds/dedup, to verify Telegram wiring."""
+    if not TELEGRAM_BOT_TOKEN or not TELEGRAM_CHAT_ID:
+        print("[error] TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID not set - cannot send test ping.", file=sys.stderr)
+        return 1
+    try:
+        send_telegram(
+            TELEGRAM_BOT_TOKEN,
+            TELEGRAM_CHAT_ID,
+            "✅ <b>SG Deals Bot</b> is wired up correctly. "
+            "You'll get a message here whenever a new Singapore deal is found.",
+        )
+        print("[info] test ping sent successfully.")
+        return 0
+    except (URLError, HTTPError, TimeoutError, OSError) as exc:
+        print(f"[error] failed to send test ping: {exc}", file=sys.stderr)
+        return 1
+
+
 # --------------------------------------------------------------------------
 # Main
 # --------------------------------------------------------------------------
 
 def main():
+    if os.environ.get("SEND_TEST_PING", "").strip().lower() in ("1", "true", "yes"):
+        return send_test_ping()
+
     conn = open_db(DB_PATH)
 
     all_candidates = collect_candidates()
