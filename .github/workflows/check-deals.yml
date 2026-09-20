@@ -4,7 +4,12 @@ on:
   schedule:
     # 00:00 UTC = 08:00 Singapore time (SGT is UTC+8)
     - cron: "0 0 * * *"
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      send_test_message:
+        description: "Send a fixed Telegram test message instead of checking feeds (use this to confirm Telegram is wired up)"
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -25,6 +30,7 @@ jobs:
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          SEND_TEST_PING: ${{ github.event.inputs.send_test_message }}
         run: python3 check_deals.py
 
       - name: Commit updated seen-list and report
