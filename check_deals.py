@@ -52,6 +52,25 @@ GOOGLE_NEWS_QUERIES = [
     "Singapore fitness challenge OR workout challenge reward voucher",
 ]
 
+# Dedicated per-retailer news queries. This is the reliable channel for
+# retailers whose own site can't be scraped (JS-rendered pages, smaller
+# chains with an uncertain domain) - if any outlet writes about a promo,
+# this is how it gets caught even when direct page monitoring can't.
+RETAILER_NEWS_QUERIES = [
+    "IKEA Singapore promotion OR sale OR voucher OR challenge",
+    "McDonald's Singapore promo OR deal OR voucher",
+    "KFC Singapore promo OR deal OR voucher",
+    "Sukiya OR Sushiro OR \"Sushi Express\" OR \"Yakiniku-GO\" OR \"Shabu Sai\" Singapore promo OR deal",
+    "Foodpanda OR Grab Singapore promo code OR voucher OR discount",
+    "Uniqlo Singapore sale OR promotion OR voucher",
+    "Courts OR \"Harvey Norman\" OR \"Best Denki\" OR Challenger Singapore sale OR promotion OR voucher",
+    "Watsons OR Guardian Singapore sale OR promotion OR voucher",
+    "FairPrice OR \"Cold Storage\" Singapore promotion OR voucher OR discount",
+    "Shopee Singapore voucher OR promo code OR flash sale",
+    "Suntec Singapore exhibition OR event OR sale",
+    "Catsmart Singapore promotion OR sale OR discount",
+]
+
 REDDIT_SUBS = ["singapore", "singaporefi", "askSingapore"]
 REDDIT_QUERY = "voucher OR deal OR promo OR freebie OR discount OR giveaway OR challenge OR contest OR win"
 
@@ -62,10 +81,38 @@ BLOG_FEEDS = [
     ("EverydayOnSales", "https://everydayonsales.com/feed/"),
 ]
 
+# Direct promo/campaign pages for retailers to monitor in depth. These are
+# best-guess URLs (this bot can't browse the web to verify them) - if one
+# is wrong or the retailer redesigns their site, that fetch just fails
+# gracefully (logged as a warning, no crash) and the retailer still gets
+# covered by RETAILER_NEWS_QUERIES above. Many retail sites render their
+# real content client-side via JavaScript, which this stdlib-only script
+# can't execute, so even a correct URL may yield nothing - that's a hard
+# limitation, not a bug. Category is the fallback bucket if no category
+# keyword matches the page text.
+RETAILER_WATCHLIST = [
+    ("IKEA", "https://www.ikea.com/sg/en/campaigns/", "Lifestyle"),
+    ("IKEA Offers", "https://www.ikea.com/sg/en/offers/", "Lifestyle"),
+    ("McDonald's SG", "https://www.mcdonalds.com.sg/promotions", "F&B"),
+    ("KFC SG", "https://www.kfc.com.sg/promotions", "F&B"),
+    ("Foodpanda SG", "https://www.foodpanda.sg/promotions", "F&B"),
+    ("Grab SG", "https://www.grab.com/sg/promotions/", "F&B"),
+    ("Uniqlo SG", "https://www.uniqlo.com/sg/en/promotions", "Lifestyle"),
+    ("Courts SG", "https://www.courts.com.sg/promotions", "Tech"),
+    ("Harvey Norman SG", "https://www.harveynorman.com.sg/promotions", "Tech"),
+    ("Best Denki SG", "https://www.bestdenki.com.sg/promotions", "Tech"),
+    ("Challenger SG", "https://www.challenger.sg/promotions", "Tech"),
+    ("Watsons SG", "https://www.watsons.com.sg/promotions", "Skincare"),
+    ("Guardian SG", "https://www.guardian.com.sg/promotions", "Skincare"),
+    ("FairPrice SG", "https://www.fairprice.com.sg/promotions", "Lifestyle"),
+    ("Cold Storage SG", "https://www.coldstorage.com.sg/promotions", "Lifestyle"),
+    ("Shopee SG", "https://shopee.sg/flash_sale", "Lifestyle"),
+]
+
 
 def build_sources():
     sources = []
-    for q in GOOGLE_NEWS_QUERIES:
+    for q in GOOGLE_NEWS_QUERIES + RETAILER_NEWS_QUERIES:
         url = (
             "https://news.google.com/rss/search?q="
             + quote(q)
@@ -422,6 +469,79 @@ def collect_candidates():
     return candidates
 
 
+def strip_scripts_and_tags(html_text):
+    """Like strip_tags, but also drops <script>/<style> blocks entirely so
+    embedded JS/CSS isn't scored as if it were page copy."""
+    text = re.sub(r"<script\b[^>]*>.*?</script>", " ", html_text, flags=re.I | re.S)
+    text = re.sub(r"<style\b[^>]*>.*?</style>", " ", text, flags=re.I | re.S)
+    text = strip_tags(text)
+    text = html.unescape(text)
+    return re.sub(r"\s+", " ", text).strip()
+
+
+def extract_snippet(text, pattern, radius=60):
+    match = pattern.search(text)
+    if not match:
+        return None
+    start = max(0, match.start() - radius)
+    end = min(len(text), match.end() + radius)
+    return text[start:end].strip()
+
+
+def check_retailer_pages():
+    """Fetch each watched retailer's promo page directly and score its
+    plain text. No publish date exists for a live page, so these bypass
+    the lookback window entirely; dedup still applies via the usual hash
+    (of retailer + matched snippet), so an unchanged page only notifies
+    once and a genuinely new/changed promo is treated as new."""
+    candidates = []
+
+    for name, url, default_category in RETAILER_WATCHLIST:
+        try:
+            raw = fetch(url)
+        except (URLError, HTTPError, TimeoutError, OSError) as exc:
+            print(f"[warn] failed to fetch retailer page {name}: {exc}", file=sys.stderr)
+            continue
+
+        try:
+            page_text = raw.decode("utf-8", errors="ignore")
+        except (UnicodeDecodeError, LookupError):
+            continue
+
+        plain = strip_scripts_and_tags(page_text)
+        if len(plain) < 50:
+            # Almost certainly a JS-rendered page with no server-side content
+            # to scan - nothing more we can do without a browser engine.
+            continue
+
+        scores = score_item(plain)
+        if scores["total"] < SCORE_THRESHOLD:
+            continue
+
+        best_pattern, best_weight = None, -1
+        for pat, w in _EARN_RE + _DEAL_RE:
+            if w > best_weight and pat.search(plain):
+                best_pattern, best_weight = pat, w
+
+        snippet = extract_snippet(plain, best_pattern) if best_pattern else plain[:120]
+        title = f"{name}: {snippet}" if snippet else f"{name}: possible promotion detected"
+        categories = scores["categories"] or [default_category]
+
+        candidates.append(
+            {
+                "hash": title_hash(f"{name} {snippet or ''}"),
+                "title": title,
+                "link": url,
+                "source": f"{name} (site)",
+                "date": None,
+                "categories": categories,
+                **{k: v for k, v in scores.items() if k != "categories"},
+            }
+        )
+
+    return candidates
+
+
 # --------------------------------------------------------------------------
 # Report + Telegram
 # --------------------------------------------------------------------------
@@ -580,7 +700,8 @@ def main():
 
     conn = open_db(DB_PATH)
 
-    all_candidates = collect_candidates()
+    all_candidates = collect_candidates() + check_retailer_pages()
+    all_candidates.sort(key=lambda c: c["total"], reverse=True)
     if full_check:
         # Ignore the dedup store entirely - report everything currently
         # matching the scoring criteria, whether or not it was seen before.
