@@ -1,10 +1,11 @@
-# SG Deals Report — 2026-09-30
+# SG Deals Report — 2026-10-01
 
-Generated at 2026-09-30T05:04:14.761473+00:00
+Generated at 2026-10-01T05:18:20.011545+00:00
+
+## 🎁 Earn a Voucher / Freebies
+- [IKEA: 7 deals detected - 10% off, 14% off, 20% off, 25% off, 28% off (+1 more)](https://www.ikea.com/sg/en/campaigns/) — score 8 — IKEA (site)
+- [IKEA Offers: 7 deals detected - 10% off, 14% off, 20% off, 25% off, 28% off (+1 more)](https://www.ikea.com/sg/en/offers/) — score 8 — IKEA Offers (site)
 
 ## 💻 Tech
-- [Challenger SG: 26 deals detected - $10 OFF, $100 OFF, $150 OFF, $200 OFF, $21 OFF (+5 more)](https://www.challenger.sg/promotions) — score 9 — Challenger SG (site)
-
-## 🍜 F&B
-- [Sushiro Opens at Hougang Mall on October 1 with 1-FOR-1 Sushi Deals and $1.50++ Free-Flow Drinks - Great Deals Singapore](https://news.google.com/rss/articles/CBMitwFBVV95cUxPWXZhajhubWJmUVdHTG1hWkN0MmthYWdTZnphdU5qVHI5X0FObnBnNmtzR1RsZUZzeWtMRzhiYkxINms2SmozNUJGLWNJX0dKa1JTOEozMmVrd0RqYUxsLUt3eXJJcVZpRjBOYWlDQnhieUt0c3gtUERpWnZWcGlaSDV4UkI2b25vc3AwWklkSzVkZ3gxUlhfYkxiaFRzTXNNMEFhUExmb1liX24wN1JqNzZMYTRlUGs?oc=5) — score 4 — Google News: Sukiya OR Sushiro OR "Sushi Express" OR "Yakiniku-GO" OR "Shabu Sai" Singapore promo OR deal
+- [Challenger SG: 19 deals detected - $100 OFF, $150 OFF, $200 OFF, $21 OFF, $30 OFF (+2 more)](https://www.challenger.sg/promotions) — score 6 — Challenger SG (site)
 
