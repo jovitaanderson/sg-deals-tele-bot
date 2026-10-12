@@ -1,5 +1,7 @@
-# SG Deals Report — 2026-10-11
+# SG Deals Report — 2026-10-12
 
-Generated at 2026-10-11T05:13:23.846480+00:00
+Generated at 2026-10-12T05:26:41.964543+00:00
 
-No new deals found today.
+## 💻 Tech
+- [Challenger SG: 6 deals detected - $5 OFF, 5% OFF](https://www.challenger.sg/promotions) — score 9 — Challenger SG (site)
+
