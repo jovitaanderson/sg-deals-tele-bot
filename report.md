@@ -1,10 +1,7 @@
-# SG Deals Report — 2026-11-03
+# SG Deals Report — 2026-11-04
 
-Generated at 2026-11-03T06:08:54.198117+00:00
+Generated at 2026-11-04T05:46:47.685851+00:00
 
-## 💻 Tech
-- [Challenger SG: 8 deals detected - $100 OFF, $11 OFF, $30 OFF, $50 OFF](https://www.challenger.sg/promotions) — score 7 — Challenger SG (site)
-
-## 🍜 F&B
-- [10 Best Food Deals In Nov 2026: 1-For-1 Hotel Buffet, $12++ Wagyu Steak And More](https://sgcheapo.com/10-best-food-deals-in-nov-2026-1-for-1-hotel-buffet-12-wagyu-steak-and-more/?utm_source=rss&utm_medium=rss&utm_campaign=10-best-food-deals-in-nov-2026-1-for-1-hotel-buffet-12-wagyu-steak-and-more) — score 4 — SGCheapo
+## 🎁 Earn a Voucher / Freebies
+- [Shopee 11.11 Big Sale Returns with Phua Chu Kang, S$111 Vouchers and a Chance to Win a S$68,000 Electric SUV - Alvinology](https://news.google.com/rss/articles/CBMi1gFBVV95cUxOR212Z05FbUdyMERzLVpzQm5MQmxwY29EdXpReFB3cGh1ajM3YVpYaDdEc3Y0M1NkQmgxNzNuRVpyNy0yaTRXTHBnMkQxZnEtd0hrREJPT01yVXdTekVhd3BTb1R4TVo1eTZrSFhaTnZDanNJUGszUkxIY18yV05SQVV1aWtuUk1hZ1BYMmFBUUpXZE9GWmJoRFl1aGhkOHAwMEFmaDlpMkZuSEk0cWg1SGxHLWpNOUREUVM1bjBaR2dCVTBPZFNla3FaOGJXNHR5VXlIc0dn?oc=5) — score 5 — Google News: Singapore voucher
 
