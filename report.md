@@ -1,7 +1,10 @@
-# SG Deals Report — 2026-11-04
+# SG Deals Report — 2026-11-05
 
-Generated at 2026-11-04T05:46:47.685851+00:00
+Generated at 2026-11-05T06:05:00.645650+00:00
 
 ## 🎁 Earn a Voucher / Freebies
-- [Shopee 11.11 Big Sale Returns with Phua Chu Kang, S$111 Vouchers and a Chance to Win a S$68,000 Electric SUV - Alvinology](https://news.google.com/rss/articles/CBMi1gFBVV95cUxOR212Z05FbUdyMERzLVpzQm5MQmxwY29EdXpReFB3cGh1ajM3YVpYaDdEc3Y0M1NkQmgxNzNuRVpyNy0yaTRXTHBnMkQxZnEtd0hrREJPT01yVXdTekVhd3BTb1R4TVo1eTZrSFhaTnZDanNJUGszUkxIY18yV05SQVV1aWtuUk1hZ1BYMmFBUUpXZE9GWmJoRFl1aGhkOHAwMEFmaDlpMkZuSEk0cWg1SGxHLWpNOUREUVM1bjBaR2dCVTBPZFNla3FaOGJXNHR5VXlIc0dn?oc=5) — score 5 — Google News: Singapore voucher
+- [DBS Altitude Cards cut sign-up bonus to 20,000 bonus miles](https://milelion.com/2026/11/05/dbs-altitude-cards-cut-sign-up-bonus-to-20000-bonus-miles/) — score 5 — Milelion
+
+## 💻 Tech
+- [Challenger SG: 24 deals detected - $100 OFF, $11 OFF, $15 OFF, $25 OFF, $30 OFF (+2 more)](https://www.challenger.sg/promotions) — score 7 — Challenger SG (site)
 
