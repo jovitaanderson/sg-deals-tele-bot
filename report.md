@@ -1,7 +1,5 @@
-# SG Deals Report — 2026-11-06
+# SG Deals Report — 2026-11-07
 
-Generated at 2026-11-06T05:59:56.777824+00:00
+Generated at 2026-11-07T05:31:33.350379+00:00
 
-## 💻 Tech
-- [Challenger SG: 26 deals detected - $100 OFF, $11 OFF, $15 OFF, $25 OFF, $30 OFF (+4 more)](https://www.challenger.sg/promotions) — score 9 — Challenger SG (site)
-
+No new deals found today.
