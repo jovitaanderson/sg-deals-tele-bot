@@ -1,10 +1,7 @@
-# SG Deals Report — 2026-11-11
+# SG Deals Report — 2026-11-12
 
-Generated at 2026-11-11T05:40:40.580688+00:00
+Generated at 2026-11-12T06:47:01.074135+00:00
 
 ## 🍜 F&B
-- [Pelago Day flash sale has 1-for-1 Singapore Oceanarium tickets and S$55 Universal Studios Singapore tickets - MoneyDigest](https://news.google.com/rss/articles/CBMizwFBVV95cUxOX2NkcWxiVURPWDJOM3FIdFJHQzA4ckp1Z3lEdmw2UlBiTVhqSG5VVlVjSmt3MWNxNXRyc2FfTjhVOTd6YlNyaW5PRFl6UzFvSGJoQVAzVnlld2lRdEp3NHhyejVkQzVPRS1DbnBDSTQ5UTNCSGNXZnNVWXh1RGZwYzBRLUhpZUpYNjItVVR2NUp1S1pqcjYtQnhNU2VGaXMyNVk0VXZoRU1wbnZtb1dxNWwwaHNlMnU4ZjBwQkRubjBsRG1DTThnbGczQjJocjQ?oc=5) — score 6 — Google News: Shopee Singapore voucher OR promo code OR flash sale
-
-## 🛍 Lifestyle
-- [Agoda to offer hotel offers of up to 60% off at upcoming mega sale campaign, Lifestyle News - AsiaOne.com](https://news.google.com/rss/articles/CBMiakFVX3lxTE8xZ29DX2pIRWxHekdWVUMxM0ZHY2UxYU5Ud3B6YmNNeTNNYzVSS3dKMVJtNk9NOFpXRXJaUlI5WlpFNjJFLVZzSTZ1MWxXYVlnbkoxenJBS05RTDZTRTFOOTFFUXRPQldkSGc?oc=5) — score 4 — Google News: Singapore mega sale OR warehouse sale OR clearance sale OR members sale
+- [Burger King Singapore's 11.11 Sale Brings 1-FOR-1 WHOPPER, Long Chicken & More Till November 15 - Great Deals Singapore](https://news.google.com/rss/articles/CBMihwFBVV95cUxQRk5UVkRaTjJobkdaQlVhdE1wd1JtcXVyX2NkYVcySlBVZm50RHo0Yy13WTJXR0o2c2YxZlMxY1JXanlZM0dpREIzdEJSbXgyRF9iQXp2Mk1yR0QtQXpRWEkwX21vaTdEQkRlMVhBMHFuU1lEajJ6UDM0bURsckM2ZGJmcC1TWE0?oc=5) — score 5 — Google News: Singapore promo code OR discount code
 
