@@ -1,10 +1,10 @@
-# SG Deals Report — 2026-11-16
+# SG Deals Report — 2026-11-17
 
-Generated at 2026-11-16T05:52:45.867806+00:00
+Generated at 2026-11-17T07:29:31.175305+00:00
+
+## 🎁 Earn a Voucher / Freebies
+- [Stand a chance to win a pair of Oceanarium tickets - The Straits Times](https://news.google.com/rss/articles/CBMikwFBVV95cUxNWjY1YXR1MmJWUTR5Y2pNYTVGUVVacllVMVNuMWk2RzVtU2tIUmRnS0FmWFM0LThIMUZwcXFYaTdjRExrbXlOLXVJamJaa1hCbUUyZTVWd29kRVhfZjNpa2RkcERULUlRelAxMVhWSVJUOEVIa2drZVJSQ3VFNUNCdWJSUmFCaG5sVW1LNjh4TWRwcE0?oc=5) — score 9 — Google News: Singapore win a voucher OR stand a chance to win OR lucky draw
 
 ## 💻 Tech
-- [Challenger SG: 12 deals detected - $100 OFF, $150 OFF, $50 OFF, $80 OFF, 10% OFF (+2 more)](https://www.challenger.sg/promotions) — score 9 — Challenger SG (site)
-
-## 🛍 Lifestyle
-- [Agoda November Mega Sale: Up to 60% Off Hotels, Flights Up to 30% Off, Plus an Extra 15% With DBS/POSB (16-30 Nov 2026) - https://www.misslobang.com/](https://news.google.com/rss/articles/CBMikwFBVV95cUxQLVFrVXVQVU12cTBpYlpJNUJQRUJfQUxYNzVlVmZiZUhaOTdyelFBUnJDb0k1d09ydFU3RnM0SlBiVGpneVhHMkdXSl8xZDRhU25OYjZVTklUT256THkwblJad3VlYjYtVzhWYjF6ZTlwSE5adTBxT3JzeXJaZTdUZ3UtRFlzcDB4WWcyUkFTcGw1aU0?oc=5) — score 4 — Google News: Singapore mega sale OR warehouse sale OR clearance sale OR members sale
+- [Challenger SG: 14 deals detected - $100 OFF, $150 OFF, $50 OFF, $6 OFF, $80 OFF (+3 more)](https://www.challenger.sg/promotions) — score 9 — Challenger SG (site)
 
