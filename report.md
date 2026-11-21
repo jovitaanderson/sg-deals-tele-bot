@@ -1,5 +1,5 @@
-# SG Deals Report — 2026-11-20
+# SG Deals Report — 2026-11-21
 
-Generated at 2026-11-20T06:44:43.689717+00:00
+Generated at 2026-11-21T06:38:01.232866+00:00
 
 No new deals found today.
